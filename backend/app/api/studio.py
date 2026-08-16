@@ -4,6 +4,9 @@ from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, status
 from app.schemas.studio import MindMapRequest, PodcastRequest, StudioOutputResponse
 from app.core.database import get_database, parse_object_id, serialize_doc
 from app.agents.mindmap_graph import generate_mindmap_json
+from app.agents.slides_graph import generate_slide_deck_json
+from app.agents.quiz_graph import generate_quiz_json
+from app.agents.flashcards_graph import generate_flashcards_json
 from app.workers.studio_tasks import process_podcast_task
 from app.api.deps import get_current_user
 
@@ -30,12 +33,10 @@ async def create_mindmap(
     user_id = parse_object_id(current_user["id"])
     now = datetime.now(timezone.utc)
     
-    # Verify notebook ownership
     notebook = await db.notebooks.find_one({"_id": nb_id, "user_id": user_id})
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
 
-    # Generate Mind Map JSON graph via LangGraph agent
     mindmap_data = await generate_mindmap_json(notebook_id=notebook_id, custom_prompt=req.custom_prompt)
 
     doc = {
@@ -45,6 +46,102 @@ async def create_mindmap(
         "status": "COMPLETED",
         "input": {"prompt": req.custom_prompt},
         "output": mindmap_data,
+        "storage_url": None,
+        "created_at": now,
+        "updated_at": now
+    }
+
+    result = await db.studio_outputs.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return serialize_doc(doc)
+
+@router.post("/api/notebooks/{notebook_id}/studio/slides", response_model=StudioOutputResponse)
+async def create_slide_deck(
+    notebook_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    nb_id = parse_object_id(notebook_id)
+    user_id = parse_object_id(current_user["id"])
+    now = datetime.now(timezone.utc)
+    
+    notebook = await db.notebooks.find_one({"_id": nb_id, "user_id": user_id})
+    if not notebook:
+        raise HTTPException(status_code=404, detail="Notebook not found")
+
+    slides_data = await generate_slide_deck_json(notebook_id=notebook_id)
+
+    doc = {
+        "notebook_id": nb_id,
+        "user_id": user_id,
+        "type": "SLIDE_DECK",
+        "status": "COMPLETED",
+        "input": {},
+        "output": slides_data,
+        "storage_url": None,
+        "created_at": now,
+        "updated_at": now
+    }
+
+    result = await db.studio_outputs.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return serialize_doc(doc)
+
+@router.post("/api/notebooks/{notebook_id}/studio/quiz", response_model=StudioOutputResponse)
+async def create_quiz(
+    notebook_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    nb_id = parse_object_id(notebook_id)
+    user_id = parse_object_id(current_user["id"])
+    now = datetime.now(timezone.utc)
+    
+    notebook = await db.notebooks.find_one({"_id": nb_id, "user_id": user_id})
+    if not notebook:
+        raise HTTPException(status_code=404, detail="Notebook not found")
+
+    quiz_data = await generate_quiz_json(notebook_id=notebook_id)
+
+    doc = {
+        "notebook_id": nb_id,
+        "user_id": user_id,
+        "type": "QUIZ",
+        "status": "COMPLETED",
+        "input": {},
+        "output": quiz_data,
+        "storage_url": None,
+        "created_at": now,
+        "updated_at": now
+    }
+
+    result = await db.studio_outputs.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return serialize_doc(doc)
+
+@router.post("/api/notebooks/{notebook_id}/studio/flashcards", response_model=StudioOutputResponse)
+async def create_flashcards(
+    notebook_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    db = get_database()
+    nb_id = parse_object_id(notebook_id)
+    user_id = parse_object_id(current_user["id"])
+    now = datetime.now(timezone.utc)
+    
+    notebook = await db.notebooks.find_one({"_id": nb_id, "user_id": user_id})
+    if not notebook:
+        raise HTTPException(status_code=404, detail="Notebook not found")
+
+    flashcards_data = await generate_flashcards_json(notebook_id=notebook_id)
+
+    doc = {
+        "notebook_id": nb_id,
+        "user_id": user_id,
+        "type": "FLASHCARDS",
+        "status": "COMPLETED",
+        "input": {},
+        "output": flashcards_data,
         "storage_url": None,
         "created_at": now,
         "updated_at": now
@@ -66,7 +163,6 @@ async def create_podcast(
     user_id = parse_object_id(current_user["id"])
     now = datetime.now(timezone.utc)
     
-    # Verify notebook ownership
     notebook = await db.notebooks.find_one({"_id": nb_id, "user_id": user_id})
     if not notebook:
         raise HTTPException(status_code=404, detail="Notebook not found")
@@ -87,7 +183,6 @@ async def create_podcast(
     studio_id_str = str(result.inserted_id)
     doc["_id"] = result.inserted_id
 
-    # Queue background task for dialogue generation & audio merging
     background_tasks.add_task(
         process_podcast_task,
         studio_output_id=studio_id_str,

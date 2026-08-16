@@ -7,17 +7,21 @@ import UploadModal from '@/components/document/UploadModal';
 import DocumentViewer from '@/components/document/DocumentViewer';
 import ChatWindow from '@/components/chat/ChatWindow';
 import MindMapViewer from '@/components/studio/MindMapViewer';
+import SlideDeckViewer from '@/components/studio/SlideDeckViewer';
+import QuizViewer from '@/components/studio/QuizViewer';
+import FlashcardViewer from '@/components/studio/FlashcardViewer';
 import PodcastPlayer from '@/components/studio/PodcastPlayer';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNotebookStore } from '@/stores/useNotebookStore';
 import {
   MessageSquare,
   Network,
+  Presentation,
+  HelpCircle,
+  Layers,
   Headphones,
-  FileText,
   Sparkles,
-  Loader2,
-  Plus
+  Loader2
 } from 'lucide-react';
 
 export default function NotebookPage({ params }) {
@@ -32,13 +36,15 @@ export default function NotebookPage({ params }) {
     activeDocumentView,
     studioOutputs,
     generateMindMap,
+    generateSlides,
+    generateQuiz,
+    generateFlashcards,
     generatePodcast,
   } = useNotebookStore();
 
-  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'mindmap' | 'podcast'
+  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'mindmap' | 'slides' | 'quiz' | 'flashcards' | 'podcast'
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [generatingMindMap, setGeneratingMindMap] = useState(false);
-  const [generatingPodcast, setGeneratingPodcast] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     fetchMe();
@@ -48,25 +54,22 @@ export default function NotebookPage({ params }) {
   }, [notebookId]);
 
   const latestMindMap = studioOutputs.find((s) => s.type === 'MIND_MAP');
+  const latestSlides = studioOutputs.find((s) => s.type === 'SLIDE_DECK');
+  const latestQuiz = studioOutputs.find((s) => s.type === 'QUIZ');
+  const latestFlashcards = studioOutputs.find((s) => s.type === 'FLASHCARDS');
   const latestPodcast = studioOutputs.find((s) => s.type === 'PODCAST');
 
-  const handleGenerateMindMap = async () => {
-    setGeneratingMindMap(true);
+  const handleGenerate = async (type) => {
+    setGenerating(true);
     try {
-      await generateMindMap(notebookId);
-      setGeneratingMindMap(false);
+      if (type === 'mindmap') await generateMindMap(notebookId);
+      if (type === 'slides') await generateSlides(notebookId);
+      if (type === 'quiz') await generateQuiz(notebookId);
+      if (type === 'flashcards') await generateFlashcards(notebookId);
+      if (type === 'podcast') await generatePodcast(notebookId, 'Host A (Technical Lead)', 'Host B (Curious Inquirer)');
+      setGenerating(false);
     } catch (err) {
-      setGeneratingMindMap(false);
-    }
-  };
-
-  const handleGeneratePodcast = async () => {
-    setGeneratingPodcast(true);
-    try {
-      await generatePodcast(notebookId, 'Host A (Technical Lead)', 'Host B (Curious Inquirer)');
-      setGeneratingPodcast(false);
-    } catch (err) {
-      setGeneratingPodcast(false);
+      setGenerating(false);
     }
   };
 
@@ -83,11 +86,11 @@ export default function NotebookPage({ params }) {
         {/* Center Panel: Workspace Tabs & Content */}
         <main className="flex-1 flex flex-col min-w-0 bg-slate-950/40 border-r border-slate-800/60 p-4 space-y-4 overflow-hidden">
           {/* Studio Navigation Bar */}
-          <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-1.5 rounded-2xl shrink-0">
+          <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 p-1.5 rounded-2xl shrink-0 overflow-x-auto">
             <div className="flex items-center space-x-1">
               <button
                 onClick={() => setActiveTab('chat')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
                   activeTab === 'chat'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -99,60 +102,103 @@ export default function NotebookPage({ params }) {
 
               <button
                 onClick={() => setActiveTab('mindmap')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
                   activeTab === 'mindmap'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <Network className="h-3.5 w-3.5" />
-                Studio Mind Map
+                Mind Map
+              </button>
+
+              <button
+                onClick={() => setActiveTab('slides')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
+                  activeTab === 'slides'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Presentation className="h-3.5 w-3.5" />
+                Slide Deck
+              </button>
+
+              <button
+                onClick={() => setActiveTab('quiz')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
+                  activeTab === 'quiz'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                Quiz
+              </button>
+
+              <button
+                onClick={() => setActiveTab('flashcards')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
+                  activeTab === 'flashcards'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Layers className="h-3.5 w-3.5" />
+                Flashcards
               </button>
 
               <button
                 onClick={() => setActiveTab('podcast')}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition whitespace-nowrap ${
                   activeTab === 'podcast'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 <Headphones className="h-3.5 w-3.5" />
-                Audio Overview Podcast
+                Podcast
               </button>
             </div>
 
-            {/* Tab Action Buttons */}
-            {activeTab === 'mindmap' && (
+            {/* Dynamic Action Button for current active tab */}
+            {activeTab !== 'chat' && (
               <button
-                onClick={handleGenerateMindMap}
-                disabled={generatingMindMap}
-                className="px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl transition flex items-center gap-1.5 shadow"
+                onClick={() => handleGenerate(activeTab)}
+                disabled={generating}
+                className="px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl transition flex items-center gap-1.5 shadow shrink-0 ml-2"
               >
-                {generatingMindMap ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                Generate Mind Map
-              </button>
-            )}
-
-            {activeTab === 'podcast' && (
-              <button
-                onClick={handleGeneratePodcast}
-                disabled={generatingPodcast}
-                className="px-3 py-1.5 text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 disabled:opacity-50 rounded-xl transition flex items-center gap-1.5 shadow"
-              >
-                {generatingPodcast ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                Generate Audio Overview
+                {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                Generate {activeTab === 'mindmap' ? 'Mind Map' : activeTab === 'slides' ? 'Slide Deck' : activeTab === 'quiz' ? 'Quiz' : activeTab === 'flashcards' ? 'Flashcards' : 'Podcast'}
               </button>
             )}
           </div>
 
-          {/* Active Tab View */}
+          {/* Active Tab View Container */}
           <div className="flex-1 min-h-0">
             {activeTab === 'chat' && <ChatWindow notebookId={notebookId} />}
 
             {activeTab === 'mindmap' && (
               <div className="h-full flex flex-col">
                 <MindMapViewer mindMapData={latestMindMap?.output} />
+              </div>
+            )}
+
+            {activeTab === 'slides' && (
+              <div className="h-full flex flex-col">
+                <SlideDeckViewer slideDeckData={latestSlides?.output} />
+              </div>
+            )}
+
+            {activeTab === 'quiz' && (
+              <div className="h-full flex flex-col">
+                <QuizViewer quizData={latestQuiz?.output} />
+              </div>
+            )}
+
+            {activeTab === 'flashcards' && (
+              <div className="h-full flex flex-col">
+                <FlashcardViewer flashcardsData={latestFlashcards?.output} />
               </div>
             )}
 
@@ -168,11 +214,11 @@ export default function NotebookPage({ params }) {
                       Creates an engaging two-speaker podcast conversation synthesizing key research ideas from your documents.
                     </p>
                     <button
-                      onClick={handleGeneratePodcast}
-                      disabled={generatingPodcast}
+                      onClick={() => handleGenerate('podcast')}
+                      disabled={generating}
                       className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center gap-2"
                     >
-                      {generatingPodcast ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                       Generate Podcast Audio
                     </button>
                   </div>

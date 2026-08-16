@@ -165,6 +165,30 @@ export const useNotebookStore = create((set, get) => ({
     return output;
   },
 
+  generateSlides: async (notebookId) => {
+    const output = await apiFetch(`/api/notebooks/${notebookId}/studio/slides`, {
+      method: 'POST',
+    });
+    set((state) => ({ studioOutputs: [output, ...state.studioOutputs] }));
+    return output;
+  },
+
+  generateQuiz: async (notebookId) => {
+    const output = await apiFetch(`/api/notebooks/${notebookId}/studio/quiz`, {
+      method: 'POST',
+    });
+    set((state) => ({ studioOutputs: [output, ...state.studioOutputs] }));
+    return output;
+  },
+
+  generateFlashcards: async (notebookId) => {
+    const output = await apiFetch(`/api/notebooks/${notebookId}/studio/flashcards`, {
+      method: 'POST',
+    });
+    set((state) => ({ studioOutputs: [output, ...state.studioOutputs] }));
+    return output;
+  },
+
   generatePodcast: async (notebookId, host1, host2) => {
     const output = await apiFetch(`/api/notebooks/${notebookId}/studio/podcast`, {
       method: 'POST',

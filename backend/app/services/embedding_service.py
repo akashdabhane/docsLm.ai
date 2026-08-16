@@ -10,24 +10,35 @@ class EmbeddingService:
     def get_embeddings(texts: List[str]) -> List[List[float]]:
         """
         Generates vector embeddings for a list of text strings.
-        Supports Gemini API, OpenAI API, with a deterministic fallback vector generator.
+        Supports local Ollama embeddings (with Gemini commented out) and fallback generator.
         """
         if not texts:
             return []
-            
-        # 1. Gemini Embeddings
-        if settings.GEMINI_API_KEY:
-            try:
-                from langchain_google_genai import GoogleGenerativeAIEmbeddings
-                embeddings = GoogleGenerativeAIEmbeddings(
-                    model="models/text-embedding-004",
-                    google_api_key=settings.GEMINI_API_KEY
-                )
-                return embeddings.embed_documents(texts)
-            except Exception as e:
-                logger.warning(f"Gemini embedding call failed, falling back: {e}")
 
-        # 2. OpenAI Embeddings
+        # 1. Local Ollama Embeddings
+        try:
+            from langchain_ollama import OllamaEmbeddings
+            embeddings = OllamaEmbeddings(
+                model=settings.OLLAMA_MODEL,
+                base_url=settings.OLLAMA_BASE_URL
+            )
+            return embeddings.embed_documents(texts)
+        except Exception as e:
+            logger.warning(f"Ollama embedding call failed, falling back: {e}")
+
+        # 2. Gemini Embeddings (COMMENTED OUT AS REQUESTED)
+        # if settings.GEMINI_API_KEY:
+        #     try:
+        #         from langchain_google_genai import GoogleGenerativeAIEmbeddings
+        #         embeddings = GoogleGenerativeAIEmbeddings(
+        #             model="models/text-embedding-004",
+        #             google_api_key=settings.GEMINI_API_KEY
+        #         )
+        #         return embeddings.embed_documents(texts)
+        #     except Exception as e:
+        #         logger.warning(f"Gemini embedding call failed, falling back: {e}")
+
+        # 3. OpenAI Embeddings
         if settings.OPENAI_API_KEY:
             try:
                 from langchain_openai import OpenAIEmbeddings
@@ -39,7 +50,7 @@ class EmbeddingService:
             except Exception as e:
                 logger.warning(f"OpenAI embedding call failed, falling back: {e}")
 
-        # 3. Local/Offline Deterministic Fallback Vector (768 dimensions)
+        # 4. Local/Offline Deterministic Fallback Vector (768 dimensions)
         logger.info(f"Generating fallback deterministic embeddings for {len(texts)} chunks.")
         result = []
         for text in texts:

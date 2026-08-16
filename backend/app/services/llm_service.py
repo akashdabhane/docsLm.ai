@@ -8,18 +8,33 @@ logger = logging.getLogger(__name__)
 class LLMService:
     @staticmethod
     def get_llm(temperature: float = 0.2):
-        """Returns initialized LangChain Chat Model (Gemini or OpenAI)."""
-        if settings.GEMINI_API_KEY:
-            try:
-                from langchain_google_genai import ChatGoogleGenerativeAI
-                return ChatGoogleGenerativeAI(
-                    model=settings.LLM_MODEL,
-                    google_api_key=settings.GEMINI_API_KEY,
-                    temperature=temperature
-                )
-            except Exception as e:
-                logger.warning(f"Failed to load ChatGoogleGenerativeAI: {e}")
+        """Returns initialized LangChain Chat Model (Ollama local LLM with Gemini/OpenAI commented out)."""
+        
+        # --- 1. LOCAL OLLAMA CHATOLLAMA (DEFAULT) ---
+        try:
+            from langchain_ollama import ChatOllama
+            logger.info(f"Using local ChatOllama model: {settings.OLLAMA_MODEL} at {settings.OLLAMA_BASE_URL}")
+            return ChatOllama(
+                model=settings.OLLAMA_MODEL,
+                base_url=settings.OLLAMA_BASE_URL,
+                temperature=temperature
+            )
+        except Exception as e:
+            logger.warning(f"Failed to load ChatOllama: {e}")
 
+        # --- 2. GEMINI LLM (COMMENTED OUT AS REQUESTED) ---
+        # if settings.GEMINI_API_KEY:
+        #     try:
+        #         from langchain_google_genai import ChatGoogleGenerativeAI
+        #         return ChatGoogleGenerativeAI(
+        #             model=settings.LLM_MODEL,
+        #             google_api_key=settings.GEMINI_API_KEY,
+        #             temperature=temperature
+        #         )
+        #     except Exception as e:
+        #         logger.warning(f"Failed to load ChatGoogleGenerativeAI: {e}")
+
+        # --- 3. OPENAI LLM FALLBACK ---
         if settings.OPENAI_API_KEY:
             try:
                 from langchain_openai import ChatOpenAI
@@ -45,7 +60,7 @@ class LLMService:
                 logger.error(f"LLM call failed: {e}")
 
         # Fallback response for dev mode
-        return f"Based on the provided documents:\n\n{prompt[:300]}...\n\n[Dev fallback response - Please configure GEMINI_API_KEY in .env for live Gemini output]"
+        return f"Based on the provided documents:\n\n{prompt[:300]}...\n\n[Fallback response - Local Ollama model {settings.OLLAMA_MODEL} is processing]"
 
     @staticmethod
     async def stream_response(prompt: str, temperature: float = 0.2) -> AsyncGenerator[str, None]:

@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "models/text-embedding-004"  # or text-embedding-3-small
     LLM_MODEL: str = "gemini-2.5-flash"  # or gpt-4o-mini
     
+    # Ollama Local LLM & Embeddings
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "qwen3:4b"
+    
     # LangSmith Observability
     LANGCHAIN_TRACING_V2: str = "false"
     LANGCHAIN_API_KEY: Optional[str] = None
