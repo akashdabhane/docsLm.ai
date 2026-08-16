@@ -1,0 +1,4 @@
+I believe I am an ideal candidate for this internship due to a combination of technical proficiency, practical experience, and a passion for learning and contributing to innovative projects.  I have a solid foundation in web development with a focus on ReactJS and Tailwind CSS. My hands-on experience with these technologies includes BookCave and Chatapp these are web applications created using ReactJs, ExpressJs and MongoDB for backend. I am confident in my ability to apply these skills to real-world scenarios and contribute effectively to your development projects.
+
+
+It is a web application builded using ReactJs, tailwindcss, Where you can buy various types books. Its backend is uses expressJs, MongoDB for storing data of users.
