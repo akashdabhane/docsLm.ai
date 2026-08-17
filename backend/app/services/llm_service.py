@@ -14,26 +14,26 @@ class LLMService:
         """Returns initialized LangChain Chat Model (Ollama local LLM with Gemini/OpenAI commented out)."""
         
         # --- 1. LOCAL OLLAMA CHATOLLAMA (DEFAULT) ---
-        try:
-            logger.info(f"Using local ChatOllama model: {settings.OLLAMA_MODEL} at {settings.OLLAMA_BASE_URL}")
-            return ChatOllama(
-                model=settings.OLLAMA_MODEL,
-                base_url=settings.OLLAMA_BASE_URL,
-                temperature=temperature
-            )
-        except Exception as e:
-            logger.warning(f"Failed to load ChatOllama: {e}")
+        # try:
+        #     logger.info(f"Using local ChatOllama model: {settings.OLLAMA_MODEL} at {settings.OLLAMA_BASE_URL}")
+        #     return ChatOllama(
+        #         model=settings.OLLAMA_MODEL,
+        #         base_url=settings.OLLAMA_BASE_URL,
+        #         temperature=temperature
+        #     )
+        # except Exception as e:
+        #     logger.warning(f"Failed to load ChatOllama: {e}")
 
         # --- 2. GEMINI LLM (COMMENTED OUT AS REQUESTED) ---
-        # if settings.GEMINI_API_KEY:
-        #     try:
-        #         return ChatGoogleGenerativeAI(
-        #             model=settings.LLM_MODEL,
-        #             google_api_key=settings.GEMINI_API_KEY,
-        #             temperature=temperature
-        #         )
-        #     except Exception as e:
-        #         logger.warning(f"Failed to load ChatGoogleGenerativeAI: {e}")
+        if settings.GEMINI_API_KEY:
+            try:
+                return ChatGoogleGenerativeAI(
+                    model=settings.LLM_MODEL,
+                    google_api_key=settings.GEMINI_API_KEY,
+                    temperature=temperature
+                )
+            except Exception as e:
+                logger.warning(f"Failed to load ChatGoogleGenerativeAI: {e}")
 
         # # --- 3. OPENAI LLM FALLBACK ---
         # if settings.OPENAI_API_KEY:
