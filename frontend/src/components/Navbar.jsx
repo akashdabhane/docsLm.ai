@@ -35,7 +35,7 @@ export default function Navbar() {
             <span>/</span>
             <div className="flex items-center space-x-1 font-medium text-slate-200 bg-slate-900 border border-slate-800 px-3 py-1 rounded-md">
               <FolderKanban className="h-4 w-4 text-blue-400" />
-              <span className="truncate max-w-[200px]">{currentNotebook.title}</span>
+              <span className="truncate max-w-50">{currentNotebook.title}</span>
             </div>
           </div>
         )}

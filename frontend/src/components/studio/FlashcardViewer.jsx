@@ -1,21 +1,45 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Layers, RotateCw, ChevronLeft, ChevronRight, Check, RefreshCw, Shuffle } from 'lucide-react';
+import { Layers, RotateCw, ChevronLeft, ChevronRight, Check, RefreshCw, Shuffle, Loader2, Sparkles } from 'lucide-react';
 
-export default function FlashcardViewer({ flashcardsData }) {
+export default function FlashcardViewer({ flashcardsData, onGenerate, generating }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [masteredIds, setMasteredIds] = useState([]);
+
+  if (generating) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-purple-600/10 border border-purple-500/20 rounded-2xl text-purple-400">
+          <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+        </div>
+        <h3 className="text-base font-bold text-white">Generating Flashcards...</h3>
+        <p className="text-xs text-slate-400 max-w-sm">
+          Creating double-sided 3D study flashcards for mastering key terminology and definitions.
+        </p>
+      </div>
+    );
+  }
 
   if (!flashcardsData || !flashcardsData.cards || flashcardsData.cards.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl">
         <Layers className="h-10 w-10 text-purple-400 mb-3" />
         <h3 className="text-base font-bold text-white mb-1">Generate 3D Study Flashcards</h3>
-        <p className="text-xs text-slate-400 max-w-sm">
+        <p className="text-xs text-slate-400 max-w-sm mb-5">
           Creates interactive double-sided flashcards for mastering key terminology and definitions.
         </p>
+        {onGenerate && (
+          <button
+            onClick={onGenerate}
+            disabled={generating}
+            className="px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate Flashcards
+          </button>
+        )}
       </div>
     );
   }

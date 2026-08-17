@@ -1,20 +1,44 @@
 'use client';
 
 import React, { useState } from 'react';
-import { HelpCircle, CheckCircle2, XCircle, RotateCcw, Award, ArrowRight } from 'lucide-react';
+import { HelpCircle, CheckCircle2, XCircle, RotateCcw, Award, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 
-export default function QuizViewer({ quizData }) {
+export default function QuizViewer({ quizData, onGenerate, generating }) {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+
+  if (generating) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-blue-600/10 border border-blue-500/20 rounded-2xl text-blue-400">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
+        </div>
+        <h3 className="text-base font-bold text-white">Generating Quiz Questions...</h3>
+        <p className="text-xs text-slate-400 max-w-sm">
+          Formulating multiple-choice comprehension questions and explanations from workspace concepts.
+        </p>
+      </div>
+    );
+  }
 
   if (!quizData || !quizData.questions || quizData.questions.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl">
         <HelpCircle className="h-10 w-10 text-blue-400 mb-3" />
         <h3 className="text-base font-bold text-white mb-1">Generate AI Comprehension Quiz</h3>
-        <p className="text-xs text-slate-400 max-w-sm">
+        <p className="text-xs text-slate-400 max-w-sm mb-5">
           Constructs interactive multiple-choice questions with answer verification and explanations.
         </p>
+        {onGenerate && (
+          <button
+            onClick={onGenerate}
+            disabled={generating}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate Quiz
+          </button>
+        )}
       </div>
     );
   }

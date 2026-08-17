@@ -1,20 +1,44 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Presentation, FileText, Sparkles, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Presentation, FileText, Sparkles, BookOpen, Loader2 } from 'lucide-react';
 
-export default function SlideDeckViewer({ slideDeckData }) {
+export default function SlideDeckViewer({ slideDeckData, onGenerate, generating }) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [showNotes, setShowNotes] = useState(false);
+
+  if (generating) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-blue-600/10 border border-blue-500/20 rounded-2xl text-blue-400">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
+        </div>
+        <h3 className="text-base font-bold text-white">Generating Slide Deck...</h3>
+        <p className="text-xs text-slate-400 max-w-sm">
+          Creating structured presentation slides, executive summaries, and speaker notes from your workspace documents.
+        </p>
+      </div>
+    );
+  }
 
   if (!slideDeckData || !slideDeckData.slides || slideDeckData.slides.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl">
         <Presentation className="h-10 w-10 text-blue-400 mb-3" />
         <h3 className="text-base font-bold text-white mb-1">Generate AI Presentation Slide Deck</h3>
-        <p className="text-xs text-slate-400 max-w-sm">
-          Creates structured presentation slides with executive summaries and speaker notes derived from your workspace documents.
+        <p className="text-xs text-slate-400 max-w-sm mb-5">
+          Create structured presentation slide view, executive summaries, and speaker notes derived from your workspace documents.
         </p>
+        {onGenerate && (
+          <button
+            onClick={onGenerate}
+            disabled={generating}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate Slide Deck
+          </button>
+        )}
       </div>
     );
   }

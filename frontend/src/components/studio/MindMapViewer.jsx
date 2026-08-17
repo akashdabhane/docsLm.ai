@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { ReactFlow, Background, Controls, Handle, Position } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Network, Sparkles } from 'lucide-react';
+import { Network, Sparkles, Loader2 } from 'lucide-react';
 
 // Custom Mind Map Node Component
 function MindMapNode({ data }) {
@@ -25,7 +25,7 @@ function MindMapNode({ data }) {
 
 const nodeTypes = { mindMapNode: MindMapNode };
 
-export default function MindMapViewer({ mindMapData }) {
+export default function MindMapViewer({ mindMapData, onGenerate, generating }) {
   const { nodes, edges } = useMemo(() => {
     if (!mindMapData || !mindMapData.root) {
       return { nodes: [], edges: [] };
@@ -83,14 +83,38 @@ export default function MindMapViewer({ mindMapData }) {
     return { nodes: generatedNodes, edges: generatedEdges };
   }, [mindMapData]);
 
+  if (generating) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-blue-600/10 border border-blue-500/20 rounded-2xl text-blue-400">
+          <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
+        </div>
+        <h3 className="text-base font-bold text-white">Synthesizing Mind Map...</h3>
+        <p className="text-xs text-slate-400 max-w-sm">
+          Synthesizing document concepts into an interactive hierarchical topic graph using React Flow.
+        </p>
+      </div>
+    );
+  }
+
   if (!mindMapData) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400">
-        <Network className="h-10 w-10 text-slate-600 mb-3" />
-        <p className="text-sm font-semibold text-slate-300">Generate Mind Map</p>
-        <p className="text-xs text-slate-500 max-w-xs mt-1">
-          Synthesizes document concepts into an interactive hierarchical topic graph using React Flow.
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl">
+        <Network className="h-10 w-10 text-blue-400 mb-3" />
+        <h3 className="text-base font-bold text-white mb-1">Generate Mind Map</h3>
+        <p className="text-xs text-slate-400 max-w-sm mb-5">
+          Synthesize document concepts into a structured hierarchical topic graph using React Flow.
         </p>
+        {onGenerate && (
+          <button
+            onClick={onGenerate}
+            disabled={generating}
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition flex items-center gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate Mind Map
+          </button>
+        )}
       </div>
     );
   }

@@ -184,31 +184,57 @@ export default function NotebookPage({ params }) {
 
             {activeTab === 'mindmap' && (
               <div className="h-full flex flex-col">
-                <MindMapViewer mindMapData={latestMindMap?.output} />
+                <MindMapViewer
+                  mindMapData={latestMindMap?.output}
+                  onGenerate={() => handleGenerate('mindmap')}
+                  generating={generating && activeTab === 'mindmap'}
+                />
               </div>
             )}
 
             {activeTab === 'slides' && (
               <div className="h-full flex flex-col">
-                <SlideDeckViewer slideDeckData={latestSlides?.output} />
+                <SlideDeckViewer
+                  slideDeckData={latestSlides?.output}
+                  onGenerate={() => handleGenerate('slides')}
+                  generating={generating && activeTab === 'slides'}
+                />
               </div>
             )}
 
             {activeTab === 'quiz' && (
               <div className="h-full flex flex-col">
-                <QuizViewer quizData={latestQuiz?.output} />
+                <QuizViewer
+                  quizData={latestQuiz?.output}
+                  onGenerate={() => handleGenerate('quiz')}
+                  generating={generating && activeTab === 'quiz'}
+                />
               </div>
             )}
 
             {activeTab === 'flashcards' && (
               <div className="h-full flex flex-col">
-                <FlashcardViewer flashcardsData={latestFlashcards?.output} />
+                <FlashcardViewer
+                  flashcardsData={latestFlashcards?.output}
+                  onGenerate={() => handleGenerate('flashcards')}
+                  generating={generating && activeTab === 'flashcards'}
+                />
               </div>
             )}
 
             {activeTab === 'podcast' && (
               <div className="h-full overflow-y-auto">
-                {latestPodcast ? (
+                {generating && activeTab === 'podcast' ? (
+                  <div className="h-full flex flex-col items-center justify-center p-12 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-3">
+                    <div className="p-4 bg-purple-600/10 border border-purple-500/20 rounded-2xl text-purple-400">
+                      <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+                    </div>
+                    <h3 className="text-base font-bold text-white">Generating Audio Podcast...</h3>
+                    <p className="text-xs text-slate-400 max-w-sm">
+                      Synthesizing document concepts into an engaging two-speaker podcast dialogue and generating audio.
+                    </p>
+                  </div>
+                ) : latestPodcast ? (
                   <PodcastPlayer studioOutput={latestPodcast} />
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center p-12 text-center text-slate-400 bg-slate-900/60 border border-slate-800 rounded-2xl">
