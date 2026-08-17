@@ -26,7 +26,7 @@ DocsLM is a production-quality, document-only AI knowledge platform inspired by 
 5. **AI Audio Overview Podcasts (`PODCAST`)**: Dialogue script generation between Host A (Technical Lead) and Host B (Curious Co-host), TTS voice synthesis, audio merging, and MP3 player with playback speed controls (1x, 1.25x, 1.5x).
 
 ### 🤖 4. Flexible LLM Provider Integration
-- Preconfigured for **Local Ollama** (`qwen3:4b` or `qwen2.5`) for zero-cost local LLM inference.
+- Preconfigured for **Local Ollama** (`qwen3:4b`) for zero-cost local LLM inference.
 - Preserved commented integrations for **Google Gemini** (`gemini-2.5-flash`) and **OpenAI** (`gpt-4o-mini`).
 
 ---
