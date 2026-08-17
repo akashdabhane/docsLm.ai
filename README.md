@@ -27,7 +27,7 @@ DocsLM is a production-quality, document-only AI knowledge platform inspired by 
 
 ### 🤖 4. Flexible LLM Provider Integration
 - Preconfigured for **Local Ollama** (`qwen3:4b`) for zero-cost local LLM inference.
-- Preserved commented integrations for **Google Gemini** (`gemini-2.5-flash`) and **OpenAI** (`gpt-4o-mini`).
+- Preserved commented integrations for **Google Gemini** (`gemini-2.5-flash`).
 
 ---
 
@@ -37,7 +37,7 @@ DocsLM is a production-quality, document-only AI knowledge platform inspired by 
 | :--- | :--- |
 | **Frontend** | Next.js 16 (App Router), React 19, JavaScript, Tailwind CSS, Zustand, React Flow (`@xyflow/react`), React Markdown |
 | **Backend** | Python 3.12, FastAPI, Pydantic, PyMuPDF (`pymupdf`), `python-docx`, `pytesseract`, `pdf2image`, `langchain-ollama`, `langgraph`, `edge-tts`, `pydub`, PyJWT, `bcrypt` |
-| **Databases & Cache** | MongoDB Atlas / Local MongoDB, Pinecone Vector DB, Redis |
+| **Databases & Cache** | MongoDB Atlas / Local MongoDB, Pinecone/MongoDB Vector DB, Redis |
 | **DevOps & Containerization** | Docker, Docker Compose |
 
 ---

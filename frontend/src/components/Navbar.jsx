@@ -2,13 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { BookOpen, LogOut, User, FolderKanban, Sparkles } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useNotebookStore } from '@/stores/useNotebookStore';
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const { currentNotebook } = useNotebookStore();
 
@@ -16,6 +17,8 @@ export default function Navbar() {
     await logout();
     router.push('/login');
   };
+
+  const isNotebookPage = pathname?.startsWith('/notebook/');
 
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
@@ -27,7 +30,7 @@ export default function Navbar() {
           <span className="tracking-tight text-white">DocsLM<span className="text-blue-500">.ai</span></span>
         </Link>
 
-        {currentNotebook && (
+        {isNotebookPage && currentNotebook && (
           <div className="flex items-center space-x-2 text-sm text-slate-400">
             <span>/</span>
             <div className="flex items-center space-x-1 font-medium text-slate-200 bg-slate-900 border border-slate-800 px-3 py-1 rounded-md">

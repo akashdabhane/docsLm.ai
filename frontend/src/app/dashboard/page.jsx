@@ -22,7 +22,7 @@ import { useNotebookStore } from '@/stores/useNotebookStore';
 export default function DashboardPage() {
   const router = useRouter();
   const { user, fetchMe, loading: authLoading } = useAuthStore();
-  const { notebooks, fetchNotebooks, createNotebook, deleteNotebook, loadingNotebooks } = useNotebookStore();
+  const { notebooks, fetchNotebooks, createNotebook, deleteNotebook, loadingNotebooks, resetNotebookState } = useNotebookStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
+    resetNotebookState();
     fetchMe();
     fetchNotebooks();
   }, []);

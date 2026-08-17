@@ -32,6 +32,7 @@ export default function NotebookPage({ params }) {
   const {
     currentNotebook,
     fetchNotebookDetails,
+    resetNotebookState,
     documents,
     activeDocumentView,
     studioOutputs,
@@ -51,6 +52,9 @@ export default function NotebookPage({ params }) {
     if (notebookId) {
       fetchNotebookDetails(notebookId);
     }
+    return () => {
+      resetNotebookState();
+    };
   }, [notebookId]);
 
   const latestMindMap = studioOutputs.find((s) => s.type === 'MIND_MAP');
