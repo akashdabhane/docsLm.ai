@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # CORS
-    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "https://docslmai.vercel.app"]
     
     # JWT Authentication
     SECRET_KEY: str = "super_secret_jwt_key_notebooklm_change_in_production_2026"
