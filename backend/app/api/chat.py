@@ -24,6 +24,7 @@ async def list_conversations(notebook_id: str, current_user: dict = Depends(get_
     convs = await cursor.to_list(length=100)
     return [serialize_doc(c) for c in convs]
 
+
 @router.post("/api/notebooks/{notebook_id}/conversations", response_model=ConversationResponse, status_code=201)
 async def create_conversation(
     notebook_id: str,
@@ -47,6 +48,7 @@ async def create_conversation(
     doc["_id"] = result.inserted_id
     return serialize_doc(doc)
 
+
 @router.get("/api/conversations/{conversation_id}/messages", response_model=List[MessageResponse])
 async def get_messages(conversation_id: str, current_user: dict = Depends(get_current_user)):
     db = get_database()
@@ -55,6 +57,7 @@ async def get_messages(conversation_id: str, current_user: dict = Depends(get_cu
     cursor = db.messages.find({"conversation_id": conv_id}).sort("created_at", 1)
     msgs = await cursor.to_list(length=500)
     return [serialize_doc(m) for m in msgs]
+
 
 @router.post("/api/notebooks/{notebook_id}/chat/stream")
 async def stream_chat(

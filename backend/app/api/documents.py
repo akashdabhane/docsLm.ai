@@ -14,6 +14,7 @@ router = APIRouter(tags=["Documents"])
 ALLOWED_EXTENSIONS = {"pdf", "docx", "doc", "txt", "md", "markdown"}
 MAX_FILE_SIZE = 25 * 1024 * 1024  # 25 MB
 
+
 @router.post("/api/notebooks/{notebook_id}/documents", response_model=DocumentResponse, status_code=202)
 async def upload_document(
     notebook_id: str,
@@ -82,6 +83,7 @@ async def upload_document(
     
     return serialize_doc(doc_record)
 
+
 @router.get("/api/notebooks/{notebook_id}/documents", response_model=List[DocumentResponse])
 async def list_documents(notebook_id: str, current_user: dict = Depends(get_current_user)):
     db = get_database()
@@ -97,6 +99,7 @@ async def list_documents(notebook_id: str, current_user: dict = Depends(get_curr
     docs = await cursor.to_list(length=100)
     return [serialize_doc(d) for d in docs]
 
+
 @router.get("/api/documents/{id}", response_model=DocumentResponse)
 async def get_document(id: str, current_user: dict = Depends(get_current_user)):
     db = get_database()
@@ -108,6 +111,7 @@ async def get_document(id: str, current_user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="Document not found")
         
     return serialize_doc(doc)
+
 
 @router.delete("/api/documents/{id}")
 async def delete_document(id: str, current_user: dict = Depends(get_current_user)):

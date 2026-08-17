@@ -4,6 +4,8 @@ from typing import List, Dict, Any
 from app.core.config import settings
 from app.core.database import get_sync_db
 from app.services.embedding_service import EmbeddingService
+from pinecone import Pinecone
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,6 @@ class RetrievalService:
         # 1. Pinecone Vector Upsert
         if settings.PINECONE_API_KEY:
             try:
-                from pinecone import Pinecone
                 pc = Pinecone(api_key=settings.PINECONE_API_KEY)
                 index = pc.Index(settings.PINECONE_INDEX_NAME)
                 
@@ -73,6 +74,7 @@ class RetrievalService:
             logger.info(f"Upserted {len(records)} chunks into MongoDB fallback vector store for notebook {notebook_id}")
         return True
 
+
     @staticmethod
     def query_notebook(notebook_id: str, query: str, top_k: int = 6) -> List[Dict[str, Any]]:
         """
@@ -85,7 +87,6 @@ class RetrievalService:
         # 1. Pinecone Vector Search
         if settings.PINECONE_API_KEY:
             try:
-                from pinecone import Pinecone
                 pc = Pinecone(api_key=settings.PINECONE_API_KEY)
                 index = pc.Index(settings.PINECONE_INDEX_NAME)
                 namespace = f"notebook_{notebook_id}"
@@ -143,12 +144,12 @@ class RetrievalService:
         scored_chunks.sort(key=lambda x: x["score"], reverse=True)
         return scored_chunks[:top_k]
 
+
     @staticmethod
     def delete_document_vectors(notebook_id: str, document_id: str):
         """Deletes vectors for a document."""
         if settings.PINECONE_API_KEY:
             try:
-                from pinecone import Pinecone
                 pc = Pinecone(api_key=settings.PINECONE_API_KEY)
                 index = pc.Index(settings.PINECONE_INDEX_NAME)
                 namespace = f"notebook_{notebook_id}"
@@ -158,3 +159,4 @@ class RetrievalService:
 
         db = get_sync_db()
         db.vector_chunks.delete_many({"document_id": document_id})
+

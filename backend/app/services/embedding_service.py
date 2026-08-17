@@ -2,6 +2,10 @@ import logging
 import hashlib
 from typing import List
 from app.core.config import settings
+from langchain_ollama import OllamaEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +21,6 @@ class EmbeddingService:
 
         # 1. Local Ollama Embeddings
         try:
-            from langchain_ollama import OllamaEmbeddings
             embeddings = OllamaEmbeddings(
                 model=settings.OLLAMA_MODEL,
                 base_url=settings.OLLAMA_BASE_URL
@@ -29,7 +32,6 @@ class EmbeddingService:
         # 2. Gemini Embeddings (COMMENTED OUT AS REQUESTED)
         # if settings.GEMINI_API_KEY:
         #     try:
-        #         from langchain_google_genai import GoogleGenerativeAIEmbeddings
         #         embeddings = GoogleGenerativeAIEmbeddings(
         #             model="models/text-embedding-004",
         #             google_api_key=settings.GEMINI_API_KEY
@@ -39,16 +41,15 @@ class EmbeddingService:
         #         logger.warning(f"Gemini embedding call failed, falling back: {e}")
 
         # 3. OpenAI Embeddings
-        if settings.OPENAI_API_KEY:
-            try:
-                from langchain_openai import OpenAIEmbeddings
-                embeddings = OpenAIEmbeddings(
-                    model="text-embedding-3-small",
-                    api_key=settings.OPENAI_API_KEY
-                )
-                return embeddings.embed_documents(texts)
-            except Exception as e:
-                logger.warning(f"OpenAI embedding call failed, falling back: {e}")
+        # if settings.OPENAI_API_KEY:
+        #     try:
+        #         embeddings = OpenAIEmbeddings(
+        #             model="text-embedding-3-small",
+        #             api_key=settings.OPENAI_API_KEY
+        #         )
+        #         return embeddings.embed_documents(texts)
+        #     except Exception as e:
+        #         logger.warning(f"OpenAI embedding call failed, falling back: {e}")
 
         # 4. Local/Offline Deterministic Fallback Vector (768 dimensions)
         logger.info(f"Generating fallback deterministic embeddings for {len(texts)} chunks.")
@@ -62,7 +63,9 @@ class EmbeddingService:
             result.append(vector)
         return result
 
+
     @staticmethod
     def get_query_embedding(query: str) -> List[float]:
         res = EmbeddingService.get_embeddings([query])
         return res[0] if res else []
+

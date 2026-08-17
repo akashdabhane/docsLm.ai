@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 VOICE_HOST_A = "en-US-ChristopherNeural"
 VOICE_HOST_B = "en-US-AvaNeural"
 
+
 class TTSService:
     @staticmethod
     async def synthesize_podcast_audio(script: List[Dict[str, str]], studio_output_id: str, notebook_id: str) -> str:
@@ -83,3 +84,4 @@ class TTSService:
         )
         logger.info(f"Podcast audio successfully generated and saved to: {storage_url}")
         return storage_url
+

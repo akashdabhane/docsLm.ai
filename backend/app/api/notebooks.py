@@ -7,6 +7,7 @@ from app.api.deps import get_current_user
 
 router = APIRouter(prefix="/api/notebooks", tags=["Notebooks"])
 
+
 @router.get("", response_model=List[NotebookResponse])
 async def list_notebooks(current_user: dict = Depends(get_current_user)):
     db = get_database()
@@ -24,6 +25,7 @@ async def list_notebooks(current_user: dict = Depends(get_current_user)):
         res.append(nb_dict)
         
     return res
+
 
 @router.post("", response_model=NotebookResponse, status_code=201)
 async def create_notebook(
@@ -48,6 +50,7 @@ async def create_notebook(
     res["document_count"] = 0
     return res
 
+
 @router.get("/{id}", response_model=NotebookResponse)
 async def get_notebook(id: str, current_user: dict = Depends(get_current_user)):
     db = get_database()
@@ -62,6 +65,7 @@ async def get_notebook(id: str, current_user: dict = Depends(get_current_user)):
     res = serialize_doc(nb)
     res["document_count"] = doc_count
     return res
+
 
 @router.delete("/{id}")
 async def delete_notebook(id: str, current_user: dict = Depends(get_current_user)):
@@ -85,3 +89,4 @@ async def delete_notebook(id: str, current_user: dict = Depends(get_current_user
     await db.notebooks.delete_one({"_id": nb_id})
     
     return {"message": "Notebook and related resources deleted successfully"}
+

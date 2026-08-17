@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 # Ensure local upload directory exists
 os.makedirs(settings.LOCAL_STORAGE_DIR, exist_ok=True)
 
+
 class StorageService:
     @staticmethod
     async def upload_file(file_bytes: bytes, filename: str, subfolder: str) -> Tuple[str, str]:
@@ -30,10 +31,12 @@ class StorageService:
         logger.info(f"File stored locally at: {file_path} (URL: {storage_url})")
         return storage_url, file_key
 
+
     @staticmethod
     def get_local_path(storage_key: str) -> str:
         """Helper to get full local file system path."""
         return os.path.join(settings.LOCAL_STORAGE_DIR, storage_key)
+
 
     @staticmethod
     async def delete_file(storage_key: str) -> bool:
@@ -46,3 +49,4 @@ class StorageService:
         except Exception as e:
             logger.error(f"Error deleting file {storage_key}: {e}")
         return False
+

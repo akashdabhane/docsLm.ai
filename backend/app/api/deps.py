@@ -9,6 +9,7 @@ from app.core.database import get_database, parse_object_id, serialize_doc
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
+
 async def get_current_user(
     request: Request,
     token: Optional[str] = Depends(oauth2_scheme)

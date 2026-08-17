@@ -5,6 +5,9 @@ from typing import List, Dict, Any, Tuple
 import pymupdf  # PyMuPDF
 import docx
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import pytesseract
+from pdf2image import convert_from_path
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +39,6 @@ class DocumentProcessor:
             # OCR Fallback check for scanned PDF pages
             if len(text.strip()) < 30:
                 try:
-                    import pytesseract
-                    from pdf2image import convert_from_path
                     # Render page to pixmap image using fitz
                     pix = page.get_pixmap()
                     img_path = f"{file_path}_temp_page_{page_num}.png"
@@ -59,6 +60,7 @@ class DocumentProcessor:
 
         doc.close()
         return pages, total_pages
+
 
     @staticmethod
     def parse_docx(file_path: str) -> Tuple[List[Dict[str, Any]], int]:
@@ -106,6 +108,7 @@ class DocumentProcessor:
 
         return pages, max(1, page_num)
 
+
     @staticmethod
     def parse_txt_or_md(file_path: str) -> Tuple[List[Dict[str, Any]], int]:
         """
@@ -145,6 +148,7 @@ class DocumentProcessor:
             })
 
         return pages, max(1, page_num)
+
 
     @classmethod
     def process_and_chunk(
@@ -205,3 +209,4 @@ class DocumentProcessor:
 
         logger.info(f"Processed file {filename}: {page_count} pages, {len(all_chunks)} chunks created.")
         return all_chunks, page_count
+

@@ -1,7 +1,10 @@
 import logging
-import json
 from typing import AsyncGenerator, Dict, Any, Optional
 from app.core.config import settings
+from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +15,6 @@ class LLMService:
         
         # --- 1. LOCAL OLLAMA CHATOLLAMA (DEFAULT) ---
         try:
-            from langchain_ollama import ChatOllama
             logger.info(f"Using local ChatOllama model: {settings.OLLAMA_MODEL} at {settings.OLLAMA_BASE_URL}")
             return ChatOllama(
                 model=settings.OLLAMA_MODEL,
@@ -25,7 +27,6 @@ class LLMService:
         # --- 2. GEMINI LLM (COMMENTED OUT AS REQUESTED) ---
         # if settings.GEMINI_API_KEY:
         #     try:
-        #         from langchain_google_genai import ChatGoogleGenerativeAI
         #         return ChatGoogleGenerativeAI(
         #             model=settings.LLM_MODEL,
         #             google_api_key=settings.GEMINI_API_KEY,
@@ -34,19 +35,19 @@ class LLMService:
         #     except Exception as e:
         #         logger.warning(f"Failed to load ChatGoogleGenerativeAI: {e}")
 
-        # --- 3. OPENAI LLM FALLBACK ---
-        if settings.OPENAI_API_KEY:
-            try:
-                from langchain_openai import ChatOpenAI
-                return ChatOpenAI(
-                    model="gpt-4o-mini",
-                    api_key=settings.OPENAI_API_KEY,
-                    temperature=temperature
-                )
-            except Exception as e:
-                logger.warning(f"Failed to load ChatOpenAI: {e}")
+        # # --- 3. OPENAI LLM FALLBACK ---
+        # if settings.OPENAI_API_KEY:
+        #     try:
+        #         return ChatOpenAI(
+        #             model="gpt-4o-mini",
+        #             api_key=settings.OPENAI_API_KEY,
+        #             temperature=temperature
+        #         )
+        #     except Exception as e:
+        #         logger.warning(f"Failed to load ChatOpenAI: {e}")
 
         return None
+
 
     @staticmethod
     async def generate_response(prompt: str, temperature: float = 0.2) -> str:
@@ -61,6 +62,7 @@ class LLMService:
 
         # Fallback response for dev mode
         return f"Based on the provided documents:\n\n{prompt[:300]}...\n\n[Fallback response - Local Ollama model {settings.OLLAMA_MODEL} is processing]"
+
 
     @staticmethod
     async def stream_response(prompt: str, temperature: float = 0.2) -> AsyncGenerator[str, None]:
@@ -83,3 +85,4 @@ class LLMService:
         words = fallback_text.split(" ")
         for w in words:
             yield w + " "
+

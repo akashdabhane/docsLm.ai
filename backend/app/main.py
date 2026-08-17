@@ -10,12 +10,14 @@ from app.core.config import settings
 from app.core.database import connect_to_mongo, close_mongo_connection
 from app.api import auth, notebooks, documents, chat, studio
 
+
 # Setup Logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("app.main")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -25,12 +27,14 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down backend...")
     await close_mongo_connection()
 
+
 app = FastAPI(
     title=settings.APP_NAME,
     version="1.0.0",
     description="Production AI Document Knowledge Platform inspired by NotebookLM",
     lifespan=lifespan
 )
+
 
 # Configure CORS
 app.add_middleware(
@@ -41,9 +45,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Mount uploaded files directory for local development serving
 os.makedirs(settings.LOCAL_STORAGE_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.LOCAL_STORAGE_DIR), name="uploads")
+
 
 # Include Routers
 app.include_router(auth.router)
@@ -51,6 +57,7 @@ app.include_router(notebooks.router)
 app.include_router(documents.router)
 app.include_router(chat.router)
 app.include_router(studio.router)
+
 
 @app.get("/api/health")
 async def health_check():
@@ -61,6 +68,7 @@ async def health_check():
         "storage": settings.STORAGE_PROVIDER
     }
 
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Global unhandled error: {exc}", exc_info=True)
@@ -68,6 +76,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "An internal server error occurred. Please try again later."}
     )
+
 
 if __name__ == "__main__":
     import uvicorn

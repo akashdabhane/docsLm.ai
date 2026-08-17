@@ -31,6 +31,7 @@ async def register(user_data: UserRegister):
     new_user["_id"] = result.inserted_id
     return serialize_doc(new_user)
 
+
 @router.post("/login", response_model=Token)
 async def login(credentials: UserLogin, response: Response):
     db = get_database()
@@ -61,11 +62,14 @@ async def login(credentials: UserLogin, response: Response):
         "user": serialized_user
     }
 
+
 @router.post("/logout")
 async def logout(response: Response):
     response.delete_cookie(key=settings.COOKIE_NAME, path="/")
     return {"message": "Logged out successfully"}
 
+
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):
     return current_user
+
