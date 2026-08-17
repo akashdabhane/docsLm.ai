@@ -221,8 +221,13 @@ export const useNotebookStore = create((set, get) => ({
     const docs = get().documents;
     const matchedDoc = docs.find((d) => d.id === citation.document_id || d.filename === citation.filename);
     set({
-      activeCitation: citation,
-      activeDocumentView: matchedDoc || { filename: citation.filename, id: citation.document_id },
+      activeCitation: { ...citation, timestamp: Date.now() },
+      activeDocumentView: matchedDoc || {
+        filename: citation.filename,
+        id: citation.document_id,
+        storage_url: citation.storage_url,
+        file_type: citation.filename?.endsWith('.pdf') ? 'pdf' : 'pdf',
+      },
     });
   },
 

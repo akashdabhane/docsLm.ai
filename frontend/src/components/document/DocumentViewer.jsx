@@ -63,8 +63,13 @@ export default function DocumentViewer() {
 
       {/* PDF / Document Renderer */}
       <div className="flex-1 bg-slate-950 p-4 overflow-y-auto flex flex-col items-center">
-        {activeDocumentView.file_type === 'pdf' && fileUrl ? (
+        {(activeDocumentView.file_type === 'pdf' || activeDocumentView.filename?.endsWith('.pdf')) && fileUrl ? (
           <iframe
+            key={
+              activeCitation
+                ? `pdf-${activeDocumentView.id || 'doc'}-pg${activeCitation.page_number || 1}-cit${activeCitation.citation_id || ''}-${activeCitation.timestamp || ''}`
+                : `pdf-${activeDocumentView.id || 'doc'}`
+            }
             src={`${fileUrl}#page=${activeCitation?.page_number || 1}`}
             className="w-full h-full min-h-[500px] border-0 rounded-xl shadow-lg"
             title="Document Viewer"
