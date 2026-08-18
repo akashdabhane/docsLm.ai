@@ -3,8 +3,8 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
-    APP_NAME: str = "NotebookLM Document Platform"
-    ENV: str = "development"
+    APP_NAME: str = "DocsLM.ai — AI Document Knowledge Platform"
+    ENV: str = os.getenv("ENV", "development")
     DEBUG: bool = True
     PORT: int = 8000
     
@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     COOKIE_NAME: str = "access_token"
-    COOKIE_SECURE: bool = False
-    COOKIE_SAME_SITE: str = "lax"
+    COOKIE_SECURE: bool = True
+    COOKIE_SAME_SITE: str = "none"
     
     # MongoDB
     MONGODB_URL: str = "mongodb://localhost:27017"

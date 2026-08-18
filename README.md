@@ -138,7 +138,6 @@ source myvenv/bin/activate
 
 # Install backend python dependencies
 pip install -r requirements.txt
-pip install email-validator langchain-ollama
 
 # Create configuration environment file
 cp .env.example .env

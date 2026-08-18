@@ -21,7 +21,7 @@ logger = logging.getLogger("app.main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing NotebookLM Document Platform Backend...")
+    logger.info("Initializing DocsLm.ai Document Platform Backend...")
     await connect_to_mongo()
     yield
     logger.info("Shutting down backend...")
